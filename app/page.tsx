@@ -176,8 +176,23 @@ export default function Page(){
         initial={{opacity:0,y:10}}
         animate={{opacity:1,y:0}}
         transition={{delay:0.2,duration:0.4,ease:[0.22,1,0.36,1]}}
-        className="absolute bottom-4 inset-x-0 flex justify-center pointer-events-none"
+        className="absolute bottom-4 inset-x-0 flex flex-col items-center gap-3 pointer-events-none"
       >
+        <div className="flex items-center gap-4 text-xs">
+          <a
+            href="/privacy"
+            className="pointer-events-auto text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition"
+          >
+            Privacy
+          </a>
+          <div className="text-zinc-300 dark:text-zinc-700">•</div>
+          <a
+            href="/terms"
+            className="pointer-events-auto text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition"
+          >
+            Terms
+          </a>
+        </div>
         <motion.a
           href="https://bliss.surf"
           target="_blank"
