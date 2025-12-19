@@ -1,6 +1,6 @@
 "use client"
 
-import {useState} from "react"
+import {useState,useEffect} from "react"
 import {motion,AnimatePresence} from "framer-motion"
 import {Image,FileText,Loader2,Copy,Check,Upload} from "lucide-react"
 
@@ -13,6 +13,11 @@ type Item={
   url?:string
 }
 
+type StatusData={
+  ok:boolean
+  responseTime:number
+}
+
 const iconFor=(type:string)=>{
   if(type.startsWith("image"))return Image
   return FileText
@@ -20,6 +25,25 @@ const iconFor=(type:string)=>{
 
 export default function Page(){
   const [items,setItems]=useState<Item[]>([])
+  const [status,setStatus]=useState<StatusData|null>(null)
+  const [statusLoading,setStatusLoading]=useState(true)
+
+  useEffect(()=>{
+    const fetchStatus=async()=>{
+      try{
+        const res=await fetch('/api/status')
+        const data=await res.json()
+        if(data.ok){
+          setStatus(data.data)
+        }
+      }catch(e){
+        console.error('failed to fetch status')
+      }finally{
+        setStatusLoading(false)
+      }
+    }
+    fetchStatus()
+  },[])
 
   function upload(files:FileList|null){
     if(!files)return
@@ -192,6 +216,37 @@ export default function Page(){
           >
             Terms
           </a>
+          {(status||statusLoading)&&(
+            <>
+              <div className="text-zinc-300 dark:text-zinc-700">•</div>
+              <a
+                href="https://status.bliss.surf/"
+                target="_blank"
+                className="pointer-events-auto flex items-center gap-1.5 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition"
+              >
+                {status&&(
+                  <>
+                    <div className={`w-1.5 h-1.5 rounded-full ${status.ok?'bg-emerald-500':'bg-red-500'}`}/>
+                    <span>{status.ok?'operational':'down'}</span>
+                  </>
+                )}
+                {statusLoading&&(
+                  <>
+                    <motion.div
+                      animate={{opacity:[0.5,1,0.5]}}
+                      transition={{duration:1.5,repeat:Infinity}}
+                      className="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700"
+                    />
+                    <motion.span
+                      animate={{opacity:[0.5,1,0.5]}}
+                      transition={{duration:1.5,repeat:Infinity}}
+                      className="text-xs w-12 h-3 bg-zinc-200 dark:bg-zinc-800 rounded inline-block"
+                    />
+                  </>
+                )}
+              </a>
+            </>
+          )}
         </div>
         <motion.a
           href="https://bliss.surf"
